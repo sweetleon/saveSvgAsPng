@@ -48,7 +48,23 @@
     }
   }
 
+  function makeSelectorPrefixRemover(el) {
+      return function(selectorText) {
+          var selectorTokens = selectorText.split(/\s+/);
+          var selectorPrefixToRemove = '';
+          for (var iToken = 0; iToken < selectorTokens.length; iToken++) {
+              selectorPrefixToRemove += ' ' + selectorTokens[iToken];
+
+              if (Array.prototype.indexOf.call(document.querySelectorAll(selectorPrefixToRemove), el) >= 0) {
+                  return selectorTokens.slice(iToken+1).join(' ');
+              }
+          }
+      }
+  }
+
   function styles(el, selectorRemap) {
+    selectorRemap = selectorRemap || makeSelectorPrefixRemover(el);
+
     var css = "";
     var sheets = document.styleSheets;
     for (var i = 0; i < sheets.length; i++) {
@@ -63,8 +79,10 @@
           if (typeof(rule.style) != "undefined") {
             var matches = el.querySelectorAll(rule.selectorText);
             if (matches.length > 0) {
-              var selector = selectorRemap ? selectorRemap(rule.selectorText) : rule.selectorText;
+              var selector = selectorRemap(rule.selectorText);
               css += selector + " { " + rule.style.cssText + " }\n";
+            } else if (rule.cssText.match(/^@font-face/)) {
+                css += rule.cssText + "\n";
             }
           }
         }
