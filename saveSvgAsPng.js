@@ -50,14 +50,18 @@
 
   function makeSelectorPrefixRemover(el) {
       return function(selectorText) {
-          return selectorText.split(/\s*,\s*/).map(function(selectorText) {
-              var selectorTokens = selectorText.split(/\s+/);
+          return selectorText.split(/\s*,\s*/).map(function(subSelectorText) {
+              var selectorTokens = subSelectorText.split(/\s+/);
               var selectorPrefixToRemove = '';
               for (var iToken = 0; iToken < selectorTokens.length; iToken++) {
                   selectorPrefixToRemove += ' ' + selectorTokens[iToken];
 
-                  if (Array.prototype.indexOf.call(document.querySelectorAll(selectorPrefixToRemove), el) >= 0) {
-                      return selectorTokens.slice(iToken+1).join(' ');
+                  var matchingSvgElements = el.querySelectorAll(selectorPrefixToRemove);
+                  if (matchingSvgElements.length) {
+                      var position = iToken;
+                      if (Array.prototype.indexOf.call(matchingSvgElements, el) >= 0) position++;
+                      else position--;
+                      return selectorTokens.slice(position).join(' ');
                   }
               }
           }).join(", ");
@@ -90,6 +94,7 @@
         }
       }
     }
+      console.log(css)
     return css;
   }
 
