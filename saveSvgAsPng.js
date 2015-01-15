@@ -27,7 +27,7 @@
         var img = new Image();
         href = href || image.getAttribute('href');
         img.src = href;
-        img.onload = function() {
+        var loadHandler = function() {
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
@@ -36,13 +36,18 @@
           if (left == 0) {
             callback();
           }
-        }
-        img.onerror = function() {
-          console.log("Could not load "+href);
-          left--;
-          if (left == 0) {
-            callback();
-          }
+        };
+        if (img.complete) {
+            loadHandler();
+        } else {
+          img.onload = loadHandler;
+          img.onerror = function() {
+            console.log("Could not load " + href);
+            left--;
+            if (left == 0) {
+              callback();
+            }
+          };
         }
       })(images[i]);
     }
@@ -94,7 +99,6 @@
         }
       }
     }
-      console.log(css)
     return css;
   }
 
@@ -147,7 +151,7 @@
     out$.svgAsDataUri(el, options, function(uri) {
       var image = new Image();
       image.src = uri;
-      image.onload = function() {
+      var loadHandler = function() {
         var canvas = document.createElement('canvas');
         canvas.width = image.width;
         canvas.height = image.height;
@@ -159,6 +163,11 @@
         a.href = canvas.toDataURL('image/png');
         document.body.appendChild(a);
         a.click();
+      };
+      if (image.complete) {
+        loadHandler();
+      } else {
+        image.onload = loadHandler;
       }
     });
   }
