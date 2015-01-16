@@ -31,7 +31,7 @@
           canvas.width = img.width;
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
-          image.setAttribute('xlink:href', canvas.toDataURL('image/png'));
+          image.setAttribute('href', canvas.toDataURL('image/png'));
           left--;
           if (left == 0) {
             callback();
