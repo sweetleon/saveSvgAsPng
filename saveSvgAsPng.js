@@ -88,7 +88,12 @@
         for (var j = 0; j < rules.length; j++) {
           var rule = rules[j];
           if (typeof(rule.style) != "undefined") {
-            var matches = el.querySelectorAll(rule.selectorText);
+            var matches = [];
+            try {
+              matches = el.querySelectorAll(rule.selectorText);
+            } catch (err) {
+                console.error(rule.selectorText, err);
+            }
             if (matches.length > 0) {
               var selector = selectorRemap(rule.selectorText);
               css += selector + " { " + rule.style.cssText + " }\n";
